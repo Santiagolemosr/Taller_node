@@ -43,10 +43,11 @@ INSERT INTO productos (nombre, precio) VALUES
 
 -- Insertar ventas
 INSERT INTO ventas (id_artesano, id_producto, fecha, cantidad) VALUES
-(1, 1, '2025-08-01', 3),
-(2, 2, '2025-08-02', 2),
-(3, 3, '2025-08-02', 1),
-(4, 4, '2025-08-03', 4);
+(1, 1, '2025-09-01', 3),
+(2, 2, '2025-10-02', 2),
+(3, 3, '2025-07-02', 1),
+(4, 4, '2025-04-03', 4);
+select * from ventas;
 
 -- Consulta 1: artesanos que más han vendido
 SELECT a.nombre, SUM(v.cantidad) AS total_vendido
@@ -62,7 +63,14 @@ JOIN ventas v USING(id_producto)
 GROUP BY p.nombre;
 
 -- Consulta 3: días con ventas superiores al promedio mensual
-SELECT fecha, SUM(cantidad) t
+SELECT fecha, SUM(cantidad) AS total_dia
 FROM ventas
 GROUP BY fecha
-HAVING t > (SELECT AVG(SUM(cantidad)) FROM ventas GROUP BY fecha);
+HAVING SUM(cantidad) > (
+  SELECT AVG(total_mes)
+  FROM (
+    SELECT SUM(cantidad) AS total_mes
+    FROM ventas
+    GROUP BY YEAR(fecha), MONTH(fecha)
+  ) m
+);
